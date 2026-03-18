@@ -4,12 +4,15 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
 import phoneService from "./services/phonebook";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [success,setSuccess]=useState(null);
+  const [error,setError]=useState(null);
 
   useEffect(() => {
     axios.get("http://localhost:3001/persons").then((result) => {
@@ -40,7 +43,17 @@ const App = () => {
           );
           setNewName("");
           setNumber("");
-        });
+          setSuccess(`${updated.name} number changed successfully`);
+          setTimeout(()=>{
+            setSuccess(null);
+          },2000);
+        })
+        .catch(()=>{
+          setError(`Information of ${updated.name} has already been removed from the server`);
+          setTimeout(()=>{
+            setError(null)
+          },2000)
+        })
       }
     } else {
       const newObj = { name: newName, number: number };
@@ -48,6 +61,10 @@ const App = () => {
         setPersons(persons.concat(data));
         setNewName("");
         setNumber("");
+        setSuccess(`${data.name} added successfully`);
+        setTimeout(()=>{
+            setSuccess(null);
+          },2000);
       });
     }
   };
@@ -62,6 +79,10 @@ const App = () => {
         if (status === 200) {
           const updatedPersons = persons.filter((person) => person.id !== id);
           setPersons(updatedPersons);
+          setSuccess(`Name deleted successfully`);
+          setTimeout(()=>{
+            setSuccess(null);
+          },2000);
         }
       });
     }
@@ -74,6 +95,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={error} type="error"/>
+      <Notification message={success} type="success"/>
       <Filter value={search} onChange={handleSearch} />
       <h3>Add a new</h3>
       <PersonForm
