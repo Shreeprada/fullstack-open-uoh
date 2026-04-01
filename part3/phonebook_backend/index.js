@@ -76,7 +76,7 @@ app.post('/api/persons',(request,response)=>{
       return response.status(400).json({ error: "This name already exists" });
     }
       const id = Math.floor(Math.random() * (10000 - 100 + 1)) + 100; // range 100-10000
-      newPerson.id = id;
+      newPerson.id = String(id);
       persons = persons.concat(newPerson);
       response.json(newPerson);
 
