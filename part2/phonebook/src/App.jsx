@@ -14,8 +14,10 @@ const App = () => {
   const [success,setSuccess]=useState(null);
   const [error,setError]=useState(null);
 
+  const baseUrl='/api/persons'
+
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((result) => {
+    axios.get(baseUrl).then((result) => {
       setPersons(result.data);
     });
   }, []);
@@ -65,7 +67,12 @@ const App = () => {
         setTimeout(()=>{
             setSuccess(null);
           },2000);
-      });
+      }).catch((error)=>{
+        setError(error?.response?.data?.error)
+        setTimeout(()=>{
+          setError(null)
+        },2000)
+      })
     }
   };
 
@@ -76,7 +83,7 @@ const App = () => {
   const handleRemove = (id) => {
     if (confirm("Delete this name?")) {
       phoneService.remove(id).then((status) => {
-        if (status === 200) {
+        if (status === 204) {
           const updatedPersons = persons.filter((person) => person.id !== id);
           setPersons(updatedPersons);
           setSuccess(`Name deleted successfully`);
